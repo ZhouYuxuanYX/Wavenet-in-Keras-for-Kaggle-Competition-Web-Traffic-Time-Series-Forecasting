@@ -43,12 +43,10 @@ Below are some sample forecasts to demonstrate some of the patterns that the net
 <img src="figures/figure_5.png" width="440"> <img src="figures/figure_4.png" width="440">
 <img src="figures/figure_6.png" width="440"> <img src="figures/figure_3.png" width="440">
 
+## Introduction to Sequence-to-Sequence Model
 
-## Requirements
-12 GB GPU (recommended), Python 2.7
+A seq2seq model has encoder, decoder and intermediate step as its main components:
 
-Python packages:
-  - numpy==1.13.1
-  - pandas==0.19.2
-  - scikit-learn==0.18.1
-  - tensorflow==1.3.0
+
+
+
