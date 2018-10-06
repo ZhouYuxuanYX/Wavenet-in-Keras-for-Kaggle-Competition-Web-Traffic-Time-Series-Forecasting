@@ -18,6 +18,7 @@ The model architecture is similar to WaveNet, consisting of a stack of dilated c
 
 </p>
 
+** Causal Convolution **:
 
 
 Below are some sample forecasts to demonstrate some of the patterns that the network can capture.  The forecasted values are in yellow, and the ground truth values (not used in training or validation) are shown in grey.  The y-axis is log transformed.
