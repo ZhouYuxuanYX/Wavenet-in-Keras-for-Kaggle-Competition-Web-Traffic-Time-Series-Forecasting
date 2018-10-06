@@ -27,6 +27,7 @@ The figure below shows a causal structure, which guarantees that the current tim
 
 </p>
 
+**Delated Convolution**:
 But as can be seen, the reception field is quite small with a limited number of stacks, and it results in poor performance handling long-term dependencies. So the idea of dilated convolution is employed. In a dilated convolution layer, filters are not applied to inputs in a simple sequential manner, but instead skip a constant dilation rate inputs in between each of the inputs they process, as in the WaveNet diagram below. By increasing the dilation rate multiplicatively at each layer (e.g. 1, 2, 4, 8, …), we can achieve the exponential relationship between layer depth and receptive field size that we desire. The figure below ilustrates the effect of dilation.
 
 <p align="center">
