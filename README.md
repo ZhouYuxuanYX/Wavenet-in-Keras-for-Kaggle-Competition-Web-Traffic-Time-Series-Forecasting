@@ -18,8 +18,14 @@ The model architecture is similar to WaveNet, consisting of a stack of dilated c
 
 </p>
 
-** Causal Convolution **:
+**Causal Convolution**:
+The figure below shows a causal structure, which guarantees that the current time step is only influenced by the previous time steps. Then an expression of the conditional probability could be established. That is to say, we assume that the current value is conditioned on the previous values in a time sequence. 
 
+
+<p align="center">
+  <img src="figures/wavenet.gif">
+
+</p>
 
 Below are some sample forecasts to demonstrate some of the patterns that the network can capture.  The forecasted values are in yellow, and the ground truth values (not used in training or validation) are shown in grey.  The y-axis is log transformed.
 
