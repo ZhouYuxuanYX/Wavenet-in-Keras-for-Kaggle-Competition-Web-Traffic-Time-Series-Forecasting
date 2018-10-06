@@ -45,8 +45,20 @@ Below are some sample forecasts to demonstrate some of the patterns that the net
 
 ## Introduction to Sequence-to-Sequence Model
 
-A seq2seq model has encoder, decoder and intermediate step as its main components:
+**RNN based seq2seq model**:
 
+A seq2seq model is mainly used in NLP tasks such as machine translation and often based on LSTM or GRU structure. It has encoder, decoder and intermediate step as its main components, mapping an arbitrarily long input sequence to an arbitrarily long output sequence with an intermediate encoded state.:
+
+<p align="center">
+  <img src="figures/seq2seq.png">
+
+</p>
+
+In comparison to fully connected feed forward neural networks, recurrent neural networks has no longer the requirement a fixed-sized input and considers naturally the relation between previous and current time steps. In addition, LSTM or GRU are advanced RNN structures, which increase the ability of capturing long-term dependencies, by forcing a approximately constant back-propagation error flow during training.
+
+However, due to the recurrent calculation for each time step, parrellelization is impossible for training theses networks. And it's a big disadvantage in the big data era. Even the input time range for a LSTM can not be arbitrary long in reality, and it is in fact severly limited by the training mechanism of RNN.
+
+**Wavenet based approach**:
 
 
 
