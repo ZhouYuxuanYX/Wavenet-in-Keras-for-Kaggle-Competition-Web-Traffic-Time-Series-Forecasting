@@ -36,12 +36,6 @@ But as can be seen, the reception field is quite small with a limited number of 
 
 </p>
 
-Below are some sample forecasts to demonstrate some of the patterns that the network can capture.  The forecasted values are in yellow, and the ground truth values (not used in training or validation) are shown in grey.  The y-axis is log transformed.
-
-<img src="figures/figure_1.png" width="440"> <img src="figures/figure_2.png" width="440">
-<img src="figures/figure_5.png" width="440"> <img src="figures/figure_4.png" width="440">
-<img src="figures/figure_6.png" width="440"> <img src="figures/figure_3.png" width="440">
-
 ## Introduction to Sequence-to-Sequence Model
 
 **RNN based seq2seq model**:
