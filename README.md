@@ -2,7 +2,6 @@
 Sequence to Sequence Model based on Wavenet instead of LSTM implemented in Keras
 
 # Web Traffic Forecasting
-My solution for the Web Traffic Forecasting competition hosted on Kaggle.
 
 ## Competition Goal
 The training dataset consists of approximately 145k time series.  Each of these time series represents a number of daily views of a different Wikipedia article, starting from July 1st, 2015 up until September 10th, 2017. The goal is to forecast the daily views between September 13th, 2017 and November 13th, 2017 for each article in the dataset.
@@ -59,6 +58,10 @@ In comparison to fully connected feed forward neural networks, recurrent neural 
 However, due to the recurrent calculation for each time step, parrellelization is impossible for training theses networks. And it's a big disadvantage in the big data era. Even the input time range for a LSTM can not be arbitrary long in reality, and it is in fact severly limited by the training mechanism of RNN.
 
 **Wavenet based approach**:
+
+With Wavenet, the training procedure for all the time steps in the input can be parrellelized. We just let the output sequence be one time step ahead of the input sequence, and at every time step of the output, the value is only influenced by the previous steps in the input.
+
+As for the inference stage, it yields every time only the prediction one step ahead as in the LSTM approach. But we don't need to define a distinct model for inferencing here. In each Iteration, the last point of the output sequence is selected as the prediction one step ahead of the previous iteration, and it is in turn concatenated to the input sequence, in order to predict one step further in the future. 
 
 
 
