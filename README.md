@@ -2,6 +2,7 @@
 Sequence to Sequence Model based on Wavenet instead of LSTM implemented in Keras
 
 # Web Traffic Forecasting
+To download the data and know more about the competition, see [here](https://www.kaggle.com/c/web-traffic-time-series-forecasting/kernels?sortBy=voteCount&group=everyone&pageSize=20&competitionId=6768)
 
 ## Competition Goal
 The training dataset consists of approximately 145k time series.  Each of these time series represents a number of daily views of a different Wikipedia article, starting from July 1st, 2015 up until September 10th, 2017. The goal is to forecast the daily views between September 13th, 2017 and November 13th, 2017 for each article in the dataset.
