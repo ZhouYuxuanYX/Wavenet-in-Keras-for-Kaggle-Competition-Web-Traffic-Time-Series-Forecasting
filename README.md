@@ -64,6 +64,10 @@ Inpired from the core ideas of Wavenet: dilated causal convolution, a simpler ve
 
 And there are some crucial factors affecting the model performance:
 
-* **Filter Size:** 
+* **Kernel Size:** Convolutional Neural Networks are able to extract local features, which might be shared globally. And the kernel size of a convolutional filter represents our belief on these low level local features of a particular kind of data.
+
+In the context of time series data, correlations between data points could be a major consideration for choosing the kernel size. Consider the following two extreme cases:
+* if the data point at each time step is uncorrelated with each other, then a kernel size of 1 might be sufficent
+* if the data points within for example 5 time steps show a strong correlation, a kernel size of 5 should be at least tested.
 
 
