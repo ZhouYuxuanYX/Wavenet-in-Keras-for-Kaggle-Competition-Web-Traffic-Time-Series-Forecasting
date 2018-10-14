@@ -58,5 +58,12 @@ With Wavenet, the training procedure for all the time steps in the input can be 
 
 As for the inference stage, it yields every time only the prediction one step ahead as in the LSTM approach. But we don't need to define a distinct model for inferencing here. In each Iteration, the last point of the output sequence is selected as the prediction one step ahead of the previous iteration, and it is in turn concatenated to the input sequence, in order to predict one step further in the future. 
 
+# About this Project
+
+Inpired from the core ideas of Wavenet: dilated causal convolution, a simpler version of it is implemented in Keras in my Project, disregarding the residual blocks used in the original paper, which is mainly employed to make deep neural networks easier to train. And this is not problem here for my project.
+
+And there are some crucial factors affecting the model performance:
+
+* **Filter Size:** 
 
 
