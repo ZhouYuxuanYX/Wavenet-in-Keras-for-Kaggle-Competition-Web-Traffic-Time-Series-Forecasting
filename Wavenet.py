@@ -87,7 +87,7 @@ def predict_and_plot(encoder_input_data, sample_ind, batch_size, enc_tail_len=50
 model_name = 'Wavenet'
 
 # load existing model
-load_previous_models = True
+load_previous_models = False
 if load_previous_models:
     print('Load Previous Models')
     model = load_model(model_name+'.h5')
@@ -101,9 +101,9 @@ gc.collect()
 #### Build neural networks ####
 if not load_previous_models:
     # convolutional layer oparameters
-    n_filters = 32
-    filter_width = 2
-    dilation_rates = [2**i for i in range(8)]
+    n_filters = 128
+    filter_width = 5
+    dilation_rates = [2**i for i in range(12)]
 
     # define an input history series and pass it through a stack of dilated causal convolutions
     history_seq = Input(shape=(None, 1))
@@ -114,16 +114,23 @@ if not load_previous_models:
                    kernel_size=filter_width,
                    padding='causal',
                    dilation_rate=dilation_rate)(x)
-
+    # for Dense Layer:
+    # Input shape
+    # nD tensor with shape: (batch_size, ..., input_dim). The most common situation would be a 2D input with shape (batch_size, input_dim).
+    #
+    # Output shape
+    # nD tensor with shape: (batch_size, ..., units).
+    # For instance, for a 2D input with shape  (batch_size, input_dim), the output would have shape (batch_size, units).
     x = Dense(128, activation='relu')(x)
-    x = Dropout(.2)(x)
+    x = Dropout(.8)(x)
+    x = Dense(64)(x)
     x = Dense(1)(x)
 
     # extract the last 14 time steps as the training target
     def slice(x, seq_length):
         return x[:, -seq_length:, :]
 
-    pred_seq_train = Lambda(slice, arguments={'seq_length':62})(x)
+    pred_seq_train = Lambda(slice, arguments={'seq_length':24})(x)
 
     model = Model(history_seq, pred_seq_train)
 
@@ -133,19 +140,19 @@ model.summary()
 if load_previous_models:
     print('Use Previous Model. Not Training')
 else:
-    batch_size = 2**8
-    epochs = 10
+    batch_size = 2**5
+    epochs = 20
 
     # sample of series from train_enc_start to train_enc_end
     # sample of series from train_enc_start to train_enc_end
     encoder_input_data = get_time_block_series(series_array, date_to_index,
-                                               train_enc_start, train_enc_end)
+                                               train_enc_start, train_enc_end)[:1000]
     encoder_input_data, encode_series_mean, encode_series_std = transform_series_encode(encoder_input_data)
     np.isnan(encoder_input_data).any()
 
     # sample of series from train_pred_start to train_pred_end
     decoder_target_data = get_time_block_series(series_array, date_to_index,
-                                                train_pred_start, train_pred_end)
+                                                train_pred_start, train_pred_end)[:1000]
     decoder_target_data = transform_series_decode(decoder_target_data, encode_series_mean, encode_series_std)
     np.isnan(decoder_target_data).any()
 
@@ -162,7 +169,7 @@ else:
     # save the model
     model.save(model_name + '.h5')
 
-
+    plt.figure()
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
 
@@ -178,65 +185,84 @@ else:
     decoder_target_data = transform_series_decode(decoder_target_data, encode_series_mean, encode_series_std)
 
 
-    predict_and_plot(encoder_input_data, 100, decoder_target_data=decoder_target_data)
-    predict_and_plot(encoder_input_data, 70000, decoder_target_data=decoder_target_data)
+    predict_and_plot(encoder_input_data, 100, 2**8,decoder_target_data=decoder_target_data)
+    predict_and_plot(encoder_input_data, 70000, 2**8, decoder_target_data=decoder_target_data)
 
-#### Predict for the Competition ####
-gc.collect()
-encoder_input_data = get_time_block_series(series_array, date_to_index, cmp_enc_start, cmp_enc_end)
-encoder_input_data, encode_series_mean, encode_series_std = transform_series_encode(encoder_input_data)
-pred_series = predict_sequences(encoder_input_data, 2**8)
+    # In-sample prediction
+    in_sample_predicition = model.predict(encoder_input_data[700:701, :-24, :],2**8)
 
-# visualize one sample to check the prediction
-predict_and_plot(encoder_input_data, 100, 2**8)
-gc.collect()
+    input = encoder_input_data[700:701, :, :].reshape(-1, 1)
+    in_sample_predicition = in_sample_predicition.reshape(-1, 1)
+    plt.figure()
+    plt.plot(input[-24:,:])
+    plt.plot(in_sample_predicition)
+    plt.legend(['data',"prediction"])
 
-# reverse the transformation
-pred_series_transformed = untransform_series_decode(pred_series, encode_series_mean, encode_series_std)
-gc.collect()
+    in_sample_predicition = model.predict(encoder_input_data[300:301, :-24, :],2**8)
 
-cmp_pred_start = datetime.datetime.strptime(data_end_date, "%Y-%m-%d") + datetime.timedelta(1)
-cmp_pred_end = cmp_pred_start + datetime.timedelta(62)
-cmp_output_date = pd.Index(np.arange(cmp_pred_start, cmp_pred_end, datetime.timedelta(days=1)).astype('str'))
+    input = encoder_input_data[300:301, :, :].reshape(-1, 1)
+    in_sample_predicition = in_sample_predicition.reshape(-1, 1)
+    plt.figure()
+    plt.plot(input[-24:,:])
+    plt.plot(in_sample_predicition)
+    plt.legend(['data',"prediction"])
 
-# check the time frame
-print('encode_input_first_day:', cmp_enc_start.date())
-print('encode_input_last_day:', cmp_enc_end.date())
-print('pred_first_day:', cmp_pred_start.date())
-print('pred_last_day:', cmp_pred_end.date())
+# #### Predict for the Competition ####
+# gc.collect()
+# encoder_input_data = get_time_block_series(series_array, date_to_index, cmp_enc_start, cmp_enc_end)[:1000]
+# encoder_input_data, encode_series_mean, encode_series_std = transform_series_encode(encoder_input_data)
+# pred_series = predict_sequences(encoder_input_data, 2**8)
+#
+# # visualize one sample to check the prediction
+# predict_and_plot(encoder_input_data, 100, 2**8)
+# gc.collect()
 
-result_df = pd.DataFrame(pred_series_transformed, columns=cmp_output_date)
-result_df['Page'] = pages  # Append 'Page' column from input_df
-result_df = pd.melt(result_df, id_vars='Page', var_name='date',
-                    value_name='Visits')
-gc.collect()
+# # reverse the transformation
+# pred_series_transformed = untransform_series_decode(pred_series, encode_series_mean, encode_series_std)
+# gc.collect()
+#
+# cmp_pred_start = datetime.datetime.strptime(data_end_date, "%Y-%m-%d") + datetime.timedelta(1)
+# cmp_pred_end = cmp_pred_start + datetime.timedelta(62)
+# cmp_output_date = pd.Index(np.arange(cmp_pred_start, cmp_pred_end, datetime.timedelta(days=1)).astype('str'))
+#
+# # check the time frame
+# print('encode_input_first_day:', cmp_enc_start.date())
+# print('encode_input_last_day:', cmp_enc_end.date())
+# print('pred_first_day:', cmp_pred_start.date())
+# print('pred_last_day:', cmp_pred_end.date())
+#
+# result_df = pd.DataFrame(pred_series_transformed, columns=cmp_output_date)
+# result_df['Page'] = pages  # Append 'Page' column from input_df
+# result_df = pd.melt(result_df, id_vars='Page', var_name='date',
+#                     value_name='Visits')
+# gc.collect()
+#
+# #### Output DataFrame ####
+# key_file = 'key_2.csv'
+# print('%%% Reading data', key_file, '...', end='', flush=True)
+# project_path = pathlib.Path(r'C:\Users\zhouyuxuan\Desktop\google kaggle comptition time series tutorial')
+# output_df = pd.read_csv(project_path / key_file)
+# print('done!')
+#
+# # Peak memory usage: additional 2 GB
+# output_df['date'] = output_df['Page'].apply(lambda a: a[-10:])  # take the last 10 characters from 'Page' as date
+# output_df['Page'] = output_df['Page'].apply(lambda a: a[:-11])  # remove the last 10 caharacters from 'Page'
+# output_df.info()
+# output_df['date'].values[0:62]
+# output_df = output_df.merge(result_df, on = "Page", how='left')
+# del result_df
+# gc.collect()
 
-#### Output DataFrame ####
-key_file = 'key_2.csv'
-print('%%% Reading data', key_file, '...', end='', flush=True)
-project_path = pathlib.Path(r'C:\Users\zhouyuxuan\Desktop\google kaggle comptition time series tutorial')
-output_df = pd.read_csv(project_path / key_file)
-print('done!')
-
-# Peak memory usage: additional 2 GB
-output_df['date'] = output_df['Page'].apply(lambda a: a[-10:])  # take the last 10 characters from 'Page' as date
-output_df['Page'] = output_df['Page'].apply(lambda a: a[:-11])  # remove the last 10 caharacters from 'Page'
-output_df.info()
-output_df['date'].values[0:62]
-output_df = output_df.merge(result_df, on = "Page", how='left')
-del result_df
-gc.collect()
-
-# Check if there is any null value
-output_df.loc[output_df.Visits.isnull(), 'Visits']
-
-output_file_path = project_path / (model_name + '.csv')
-
-print('%%% Writing result to ' + str(output_file_path) + ' ...',
-      end = '', flush = True)
-output_df[['Id','Visits']].to_csv(output_file_path, index = False, float_format='%.3f')
-print('done!')
-gc.collect()
+# # Check if there is any null value
+# output_df.loc[output_df.Visits.isnull(), 'Visits']
+#
+# output_file_path = project_path / (model_name + '.csv')
+#
+# print('%%% Writing result to ' + str(output_file_path) + ' ...',
+#       end = '', flush = True)
+# output_df[['Id','Visits']].to_csv(output_file_path, index = False, float_format='%.3f')
+# print('done!')
+# gc.collect()
 
 
 

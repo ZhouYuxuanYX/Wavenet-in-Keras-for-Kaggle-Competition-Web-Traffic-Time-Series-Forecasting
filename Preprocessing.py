@@ -31,7 +31,7 @@ def preprocessing():
 
 
     plot_random_series(df, 6)
-    pred_steps = 62
+    pred_steps = 24
     pred_length = timedelta(pred_steps)
 
     first_day = pd.to_datetime(data_start_date)
