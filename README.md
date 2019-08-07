@@ -1,4 +1,5 @@
 # Reference !!!
+Sorry for not having stated the reference in the beginning. I initially used the github for self-practice.
 https://github.com/JEddy92/TimeSeries_Seq2Seq
 
 # Wavenet-in-Keras-for-Kaggle-Competition-Web-Traffic-Time-Series-Forecasting
