@@ -1,6 +1,9 @@
-# Reference !!!
-Sorry for not having stated the reference in the beginning. I initially used the github for self-practice.
+# References !!!
+Sorry for not having stated the references in the beginning. I initially used the github for self-practice.
+
 https://github.com/JEddy92/TimeSeries_Seq2Seq
+
+Oord, Aaron van den, et al. "Wavenet: A generative model for raw audio." arXiv preprint arXiv:1609.03499 (2016).
 
 # Wavenet-in-Keras-for-Kaggle-Competition-Web-Traffic-Time-Series-Forecasting
 Sequence to Sequence Model based on Wavenet instead of LSTM implemented in Keras
